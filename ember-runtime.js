@@ -9197,7 +9197,10 @@ define("ember-metal/property_set",
             propertyWillChange(obj, keyName);
             
               if (hasPropertyAccessors) {
-                if ((currentValue === undefined && !(keyName in obj)) || !obj.propertyIsEnumerable(keyName)) {
+                if (
+                  (currentValue === undefined && !(keyName in obj)) ||
+                  !Object.prototype.propertyIsEnumerable.call(obj, keyName)
+                ) {
                   defineProperty(obj, keyName, null, value); // setup mandatory setter
                 } else {
                   meta.values[keyName] = value;
@@ -10869,7 +10872,7 @@ define("ember-metal/watch_key",
           m.values[keyName] = obj[keyName];
           o_defineProperty(obj, keyName, {
             configurable: true,
-            enumerable: obj.propertyIsEnumerable(keyName),
+            enumerable: Object.prototype.propertyIsEnumerable.call(obj, keyName),
             set: MANDATORY_SETTER_FUNCTION(keyName),
             get: DEFAULT_GETTER_FUNCTION(keyName)
           });
@@ -10894,7 +10897,7 @@ define("ember-metal/watch_key",
           if (hasPropertyAccessors && keyName in obj) {
             o_defineProperty(obj, keyName, {
               configurable: true,
-              enumerable: obj.propertyIsEnumerable(keyName),
+              enumerable: Object.prototype.propertyIsEnumerable.call(obj, keyName),
               set: function(val) {
                 // redefine to set as enumerable
                 o_defineProperty(obj, keyName, {

@@ -5705,8 +5705,8 @@ enifed("ember-handlebars/tests/controls/text_field_test.jshint",
     });
   });
 enifed("ember-handlebars/tests/handlebars_test",
-  ["ember-metal/core","ember-views/system/jquery","ember-metal/enumerable_utils","ember-metal/run_loop","ember-runtime/system/namespace","ember-views/views/view","ember-handlebars/views/metamorph_view","ember-handlebars","ember-runtime/system/object","ember-runtime/controllers/object_controller","ember-runtime/system/native_array","ember-metal/computed","ember-runtime/system/string","ember-metal/utils","ember-runtime/system/array_proxy","ember-views/views/collection_view","ember-views/views/container_view","ember-metal/binding","ember-metal/observer","ember-handlebars/controls/text_field","ember-runtime/system/container","ember-metal/logger","ember-handlebars/string","ember-metal/property_get","ember-metal/property_set"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __dependency15__, __dependency16__, __dependency17__, __dependency18__, __dependency19__, __dependency20__, __dependency21__, __dependency22__, __dependency23__, __dependency24__, __dependency25__) {
+  ["ember-metal/core","ember-views/system/jquery","ember-metal/enumerable_utils","ember-metal/run_loop","ember-runtime/system/namespace","ember-views/views/view","ember-handlebars/views/metamorph_view","ember-handlebars","ember-runtime/system/object","ember-runtime/controllers/object_controller","ember-runtime/system/native_array","ember-metal/computed","ember-runtime/system/string","ember-metal/utils","ember-runtime/system/array_proxy","ember-views/views/collection_view","ember-views/views/container_view","ember-metal/binding","ember-metal/observer","ember-handlebars/controls/text_field","ember-runtime/system/container","ember-metal/logger","ember-metal/platform","ember-handlebars/string","ember-metal/property_get","ember-metal/property_set"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __dependency15__, __dependency16__, __dependency17__, __dependency18__, __dependency19__, __dependency20__, __dependency21__, __dependency22__, __dependency23__, __dependency24__, __dependency25__, __dependency26__) {
     "use strict";
     /*jshint newcap:false*/
     var Ember = __dependency1__["default"];
@@ -5733,13 +5733,14 @@ enifed("ember-handlebars/tests/handlebars_test",
     var TextField = __dependency20__["default"];
     var Container = __dependency21__["default"];
     var Logger = __dependency22__["default"];
+    var o_create = __dependency23__.create;
 
-    var htmlSafe = __dependency23__["default"];
+    var htmlSafe = __dependency24__["default"];
 
     var trim = jQuery.trim;
 
-    var get = __dependency24__.get;
-    var set = __dependency25__.set;
+    var get = __dependency25__.get;
+    var set = __dependency26__.set;
 
     function firstGrandchild(view) {
       return get(get(view, 'childViews').objectAt(0), 'childViews').objectAt(0);
@@ -6000,6 +6001,24 @@ enifed("ember-handlebars/tests/handlebars_test",
         Ember.set(context, 'aNumber', 2);
       });
       equal(view.$().text(), '2');
+    });
+
+    test("should read from an Object.create(null)", function() {
+      // Use ember's polyfill for Object.create
+      var nullObject = o_create(null);
+      nullObject['foo'] = 'bar';
+      view = EmberView.create({
+        context: { nullObject: nullObject },
+        template: EmberHandlebars.compile('{{nullObject.foo}}')
+      });
+
+      appendView();
+      equal(view.$().text(), 'bar');
+
+      Ember.run(function(){
+        Ember.set(nullObject, 'foo', 'baz');
+      });
+      equal(view.$().text(), 'baz');
     });
 
     test("htmlSafe should return an instance of Handlebars.SafeString", function() {
