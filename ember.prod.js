@@ -9818,6 +9818,9 @@ enifed("ember-handlebars/string",
       @return {Handlebars.SafeString} a string that will not be html escaped by Handlebars
     */
     function htmlSafe(str) {
+      if (typeof str !== 'string') {
+        str = ''+str;
+      }
       return new Handlebars.SafeString(str);
     }
 
@@ -9845,7 +9848,7 @@ enifed("ember-handlebars/string",
     __exports__["default"] = htmlSafe;
   });
 enifed("ember-handlebars/views/handlebars_bound_view",
-  ["ember-handlebars-compiler","ember-metal/core","ember-metal/error","ember-metal/property_get","ember-metal/property_set","ember-metal/merge","ember-metal/run_loop","ember-metal/computed","ember-views/views/view","ember-views/views/states","ember-handlebars/views/metamorph_view","ember-handlebars/ext","ember-metal/utils","exports"],
+  ["ember-handlebars-compiler","ember-metal/core","ember-metal/error","ember-metal/property_get","ember-metal/property_set","ember-metal/merge","ember-metal/run_loop","ember-views/views/view","ember-handlebars/string","ember-views/views/states","ember-handlebars/views/metamorph_view","ember-handlebars/ext","ember-metal/utils","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __exports__) {
     "use strict";
     /*globals Handlebars, Metamorph:true */
@@ -9870,8 +9873,8 @@ enifed("ember-handlebars/views/handlebars_bound_view",
     var set = __dependency5__.set;
     var merge = __dependency6__["default"];
     var run = __dependency7__["default"];
-    var computed = __dependency8__.computed;
-    var View = __dependency9__["default"];
+    var View = __dependency8__["default"];
+    var htmlSafe = __dependency9__["default"];
     var cloneStates = __dependency10__.cloneStates;
     var states = __dependency10__.states;
     var viewStates = states;
@@ -9932,7 +9935,7 @@ enifed("ember-handlebars/views/handlebars_bound_view",
         }
 
         if (!escape && !(result instanceof SafeString)) {
-          result = new SafeString(result);
+          result = htmlSafe(result);
         }
 
         return result;
@@ -13531,16 +13534,18 @@ enifed("ember-metal/core",
 enifed("ember-metal/dependent_keys",
   ["ember-metal/platform","ember-metal/watching","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var create = __dependency1__.create;
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
+    var o_create = __dependency1__.create;
     var watch = __dependency2__.watch;
     var unwatch = __dependency2__.unwatch;
 
     /**
     @module ember-metal
     */
-
-    var o_create = create;
 
     // ..........................................................
     // DEPENDENT KEYS
@@ -13966,7 +13971,11 @@ enifed("ember-metal/error",
 enifed("ember-metal/events",
   ["ember-metal/core","ember-metal/utils","ember-metal/platform","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
     /**
     @module ember-metal
     */
@@ -15733,7 +15742,11 @@ enifed("ember-metal/merge",
 enifed("ember-metal/mixin",
   ["ember-metal/core","ember-metal/merge","ember-metal/array","ember-metal/platform","ember-metal/utils","ember-metal/expand_properties","ember-metal/properties","ember-metal/computed","ember-metal/binding","ember-metal/observer","ember-metal/events","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __exports__) {
-    "use strict";
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
     /**
     @module ember
     @submodule ember-metal
@@ -18452,7 +18465,11 @@ enifed("ember-metal/set_properties",
 enifed("ember-metal/utils",
   ["ember-metal/core","ember-metal/platform","ember-metal/array","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
     var Ember = __dependency1__["default"];
     var o_defineProperty = __dependency2__.defineProperty;
     var canDefineNonEnumerableProperties = __dependency2__.canDefineNonEnumerableProperties;
@@ -24351,7 +24368,7 @@ enifed("ember-routing/system/route",
         });
         ```
 
-        The model for the `post` route is `App.Post.find(params.post_id)`.
+        The model for the `post` route is `store.find('post', params.post_id)`.
 
         By default, if your route has a dynamic segment ending in `_id`:
 
@@ -24394,7 +24411,7 @@ enifed("ember-routing/system/route",
         ```js
         App.PostRoute = Ember.Route.extend({
           model: function(params) {
-            return App.Post.find(params.post_id);
+            return this.store.find('post', params.post_id);
           }
         });
         ```
@@ -24560,7 +24577,7 @@ enifed("ember-routing/system/route",
         ```js
         App.PhotosRoute = Ember.Route.extend({
           model: function() {
-            return App.Photo.find();
+            return this.store.find('photo');
           },
 
           setupController: function (controller, model) {
@@ -24795,7 +24812,7 @@ enifed("ember-routing/system/route",
         // posts route
         Ember.Route.extend({
           renderTemplate: function(){
-            this.render('posts', {
+            this.render('photos', {
               into: 'application',
               outlet: 'anOutletName'
             })
@@ -37602,6 +37619,8 @@ enifed("ember-views/system/render_buffer",
       */
       element: function() {
         var content = this.innerContent();
+        // No content means a text node buffer, with the content
+        // in _element. HandlebarsBoundView is an example.
         if (content === null)  {
           return this._element;
         }
@@ -37677,16 +37696,17 @@ enifed("ember-views/system/render_buffer",
     };
   });
 enifed("ember-views/system/renderer",
-  ["ember-metal-views/renderer","ember-metal/platform","ember-views/system/render_buffer","ember-metal/run_loop","ember-metal/property_set","ember-metal/instrumentation","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
+  ["ember-metal/core","ember-metal-views/renderer","ember-metal/platform","ember-views/system/render_buffer","ember-metal/run_loop","ember-metal/property_set","ember-metal/instrumentation","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __exports__) {
     "use strict";
-    var Renderer = __dependency1__["default"];
-    var create = __dependency2__.create;
-    var renderBuffer = __dependency3__["default"];
-    var run = __dependency4__["default"];
-    var set = __dependency5__.set;
-    var _instrumentStart = __dependency6__._instrumentStart;
-    var subscribers = __dependency6__.subscribers;
+    var Ember = __dependency1__["default"];
+    var Renderer = __dependency2__["default"];
+    var create = __dependency3__.create;
+    var renderBuffer = __dependency4__["default"];
+    var run = __dependency5__["default"];
+    var set = __dependency6__.set;
+    var _instrumentStart = __dependency7__._instrumentStart;
+    var subscribers = __dependency7__.subscribers;
 
     function EmberRenderer() {
       this.buffer = renderBuffer();
@@ -37746,10 +37766,14 @@ enifed("ember-views/system/renderer",
         // provided buffer operation (for example, `insertAfter` will
         // insert a new buffer after the "parent buffer").
         var tagName = view.tagName;
+        var classNameBindings = view.classNameBindings;
+        var taglessViewWithClassBindings = tagName === '' && classNameBindings.length > 0;
+
         if (tagName === null || tagName === undefined) {
           tagName = 'div';
         }
 
+        
         var buffer = view.buffer = this.buffer;
         buffer.reset(tagName, contextualElement);
 
@@ -37757,7 +37781,7 @@ enifed("ember-views/system/renderer",
           view.beforeRender(buffer);
         }
 
-        if (view.tagName !== '') {
+        if (tagName !== '') {
           if (view.applyAttributesToBuffer) {
             view.applyAttributesToBuffer(buffer);
           }
@@ -40640,6 +40664,7 @@ enifed("ember-views/views/view",
           var property = split[0];
           var attributeName = split[1] || property;
 
+          
           if (property in this) {
             this._setupAttributeBindingObservation(property, attributeName);
 

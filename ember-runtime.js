@@ -4955,16 +4955,18 @@ define("ember-metal/core",
 define("ember-metal/dependent_keys",
   ["ember-metal/platform","ember-metal/watching","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
-    "use strict";
-    var create = __dependency1__.create;
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
+    var o_create = __dependency1__.create;
     var watch = __dependency2__.watch;
     var unwatch = __dependency2__.unwatch;
 
     /**
     @module ember-metal
     */
-
-    var o_create = create;
 
     // ..........................................................
     // DEPENDENT KEYS
@@ -5391,7 +5393,11 @@ define("ember-metal/error",
 define("ember-metal/events",
   ["ember-metal/core","ember-metal/utils","ember-metal/platform","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
     /**
     @module ember-metal
     */
@@ -7162,7 +7168,11 @@ define("ember-metal/merge",
 define("ember-metal/mixin",
   ["ember-metal/core","ember-metal/merge","ember-metal/array","ember-metal/platform","ember-metal/utils","ember-metal/expand_properties","ember-metal/properties","ember-metal/computed","ember-metal/binding","ember-metal/observer","ember-metal/events","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __exports__) {
-    "use strict";
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
     /**
     @module ember
     @submodule ember-metal
@@ -9934,7 +9944,11 @@ define("ember-metal/set_properties",
 define("ember-metal/utils",
   ["ember-metal/core","ember-metal/platform","ember-metal/array","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
-    "use strict";
+        // Remove "use strict"; from transpiled module until
+    // https://bugs.webkit.org/show_bug.cgi?id=138038 is fixed
+    //
+    // REMOVE_USE_STRICT: true
+
     var Ember = __dependency1__["default"];
     var o_defineProperty = __dependency2__.defineProperty;
     var canDefineNonEnumerableProperties = __dependency2__.canDefineNonEnumerableProperties;

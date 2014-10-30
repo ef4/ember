@@ -5970,6 +5970,38 @@ enifed("ember-handlebars/tests/handlebars_test",
       equal(view.$().text(), 'Gwar');
     });
 
+    test("should read a number value", function() {
+      var context = { aNumber: 1 };
+      view = EmberView.create({
+        context: context,
+        template: EmberHandlebars.compile('{{aNumber}}')
+      });
+
+      appendView();
+      equal(view.$().text(), '1');
+
+      Ember.run(function(){
+        Ember.set(context, 'aNumber', 2);
+      });
+      equal(view.$().text(), '2');
+    });
+
+    test("should read an escaped number value", function() {
+      var context = { aNumber: 1 };
+      view = EmberView.create({
+        context: context,
+        template: EmberHandlebars.compile('{{{aNumber}}}')
+      });
+
+      appendView();
+      equal(view.$().text(), '1');
+
+      Ember.run(function(){
+        Ember.set(context, 'aNumber', 2);
+      });
+      equal(view.$().text(), '2');
+    });
+
     test("htmlSafe should return an instance of Handlebars.SafeString", function() {
       var safeString = htmlSafe("you need to be more <b>bold</b>");
 
@@ -49472,6 +49504,16 @@ enifed("ember-views/tests/views/view/attribute_bindings_test",
       }
       ok(!error, error);
     });
+
+    test("asserts if an attributeBinding is setup on class", function() {
+      view = EmberView.create({
+        attributeBindings: ['class']
+      });
+
+      expectAssertion(function() {
+        appendView();
+      }, 'You cannot use class as an attributeBinding, use classNameBindings instead.');
+    });
   });
 enifed("ember-views/tests/views/view/attribute_bindings_test.jshint",
   [],
@@ -50195,6 +50237,22 @@ enifed("ember-views/tests/views/view/create_element_test",
       });
 
       equal(ret, view, 'returns receiver');
+    });
+
+    test('should assert if `tagName` is an empty string and `classNameBindings` are specified', function() {
+      expect(1);
+
+      view = EmberView.create({
+        tagName: '',
+        foo: true,
+        classNameBindings: ['foo:is-foo:is-bar']
+      });
+
+      expectAssertion(function(){
+        run(function(){
+          view.createElement();
+        });
+      }, /You cannot use `classNameBindings` on a tag-less view/);
     });
 
     test("calls render and turns resultant string into element", function() {
