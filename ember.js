@@ -5,7 +5,7 @@
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
  * @license   Licensed under MIT license
  *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   1.8.1
+ * @version   1.8.1+braveleaf0.c940e688
  */
 
 (function() {
@@ -13645,7 +13645,7 @@ enifed("ember-metal/core",
 
       @class Ember
       @static
-      @version 1.8.1
+      @version 1.8.1+braveleaf0.c940e688
     */
 
     if ('undefined' === typeof Ember) {
@@ -13672,10 +13672,10 @@ enifed("ember-metal/core",
     /**
       @property VERSION
       @type String
-      @default '1.8.1'
+      @default '1.8.1+braveleaf0.c940e688'
       @static
     */
-    Ember.VERSION = '1.8.1';
+    Ember.VERSION = '1.8.1+braveleaf0.c940e688';
 
     /**
       Standard environmental variables. You can define these in a global `EmberENV`
@@ -25768,6 +25768,7 @@ enifed("ember-routing/system/router",
         var container = this.container;
         var self = this;
         var initialURL = get(this, 'initialURL');
+        var initialTransition;
 
         // Allow the Location class to cancel the router setup while it refreshes
         // the page
@@ -25787,8 +25788,10 @@ enifed("ember-routing/system/router",
         if (typeof initialURL === "undefined") {
           initialURL = location.getURL();
         }
-
-        this.handleURL(initialURL);
+        initialTransition = this.handleURL(initialURL);
+        if (initialTransition && initialTransition.error) {
+          throw initialTransition.error;
+        }
       },
 
       /**
@@ -46494,6 +46497,7 @@ enifed("router/transition",
 
       if (error) {
         this.promise = Promise.reject(error);
+        this.error = error;
         return;
       }
 
