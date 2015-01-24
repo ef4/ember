@@ -1,7 +1,7 @@
 {
   "name": "ember",
   "repo": "components/ember",
-  "version": "1.8.1+braveleaf0.c940e688",
+  "version": "1.8.1+braveleaf1.eeaa8222",
   "main": "ember.js",
   "scripts": [
     "ember.js"
