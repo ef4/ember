@@ -5,7 +5,7 @@
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
  * @license   Licensed under MIT license
  *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   1.8.1+braveleaf1.eeaa8222
+ * @version   1.8.1+braveleaf2.12b50e15
  */
 
 (function() {
@@ -13645,7 +13645,7 @@ enifed("ember-metal/core",
 
       @class Ember
       @static
-      @version 1.8.1+braveleaf1.eeaa8222
+      @version 1.8.1+braveleaf2.12b50e15
     */
 
     if ('undefined' === typeof Ember) {
@@ -13672,10 +13672,10 @@ enifed("ember-metal/core",
     /**
       @property VERSION
       @type String
-      @default '1.8.1+braveleaf1.eeaa8222'
+      @default '1.8.1+braveleaf2.12b50e15'
       @static
     */
-    Ember.VERSION = '1.8.1+braveleaf1.eeaa8222';
+    Ember.VERSION = '1.8.1+braveleaf2.12b50e15';
 
     /**
       Standard environmental variables. You can define these in a global `EmberENV`
@@ -38085,11 +38085,18 @@ enifed("ember-testing/test",
           // It's the first async helper in current context
           lastPromise = fn.apply(app, args);
         } else {
-          // wait for last helper's promise to resolve
-          // and then execute
+          // wait for last helper's promise to resolve and then
+          // execute. To be safe, we need to tell the adapter we're going
+          // asynchronous here, because fn may not be invoked before we
+          // return.
+          Test.adapter.asyncStart();
           run(function() {
             lastPromise = Test.resolve(lastPromise).then(function() {
-              return fn.apply(app, args);
+              try {
+                return fn.apply(app, args);
+              } finally {
+                Test.adapter.asyncEnd();
+              }
             });
           });
         }
